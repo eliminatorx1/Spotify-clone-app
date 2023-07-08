@@ -2,6 +2,7 @@
 import Router from "next/router";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import {FaPlay} from "react-icons/fa";
 
 interface ListItemProps{
     image: string;
@@ -27,6 +28,7 @@ const ListItem:React.FC<ListItemProps> = ({
         //this is an html button and not our custom button
 
         <button
+        onClick={onClick}
         
         className="
          relative
@@ -59,7 +61,29 @@ const ListItem:React.FC<ListItemProps> = ({
                 alt = "Image" 
                 />
             </div>
-            <p>{name}</p>
+            <p className="font-medium truncate py-5">
+                {name}
+            </p>
+            <div
+            className="
+            absolute
+            transition
+            opacity-0
+            rounded-full
+            flex
+            items-center
+            justify-center
+            bg-green-500
+            p-4
+            drop-shadow-md
+            right-5
+            group-hover:opacity-100
+            hover:scale-110
+            "
+            >
+                <FaPlay className="text-black"/>
+
+            </div>
 
         </button>
         
