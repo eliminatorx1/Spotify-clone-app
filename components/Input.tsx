@@ -30,10 +30,11 @@ const Input = forwardRef<HTMLInputElement,InputProps>(({
          file:text:sm
          file:font-medium
          placeholder:text-neutral-400
-         disabled: cursor-not-allowed
+         disabled:cursor-not-allowed
          disabled:opacity-50
          focus:outline-none
          `,
+         disabled && 'opacity-75',
          className
 
          )}
