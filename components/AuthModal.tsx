@@ -1,5 +1,5 @@
 
-"use Client"
+"use client"
 import Modal from "./Modal"
 
 import { deflate } from "zlib"
@@ -9,6 +9,7 @@ import {Auth} from "@supabase/auth-ui-react"
 import {ThemeSupa} from "@supabase/auth-ui-shared"
 import { useRouter } from "next/navigation"
 import UseAuthModal from "@/hooks/useAuthModal"
+import { useEffect } from "react"
 
 
 const AuthModal = ()=>{
@@ -16,6 +17,15 @@ const AuthModal = ()=>{
     const router = useRouter();
     const {session} = useSessionContext();
     const {onClose, isOpen} = UseAuthModal()
+
+    useEffect(() =>{
+        if(session){
+            router.refresh();
+            onClose();
+
+        }
+
+    }, [session, router, onClose]);
 
     const onChange = (open:boolean) =>{
         if(!open){
@@ -37,7 +47,7 @@ const AuthModal = ()=>{
         >
             <Auth  //this will display the authentication page provided by the supabase client
             theme="dark"
-            magicLink //this will send the link to the email for the login no need of password
+            magicLink = {true} //this will send the link to the email for the login no need of password
             providers={["github", "facebook", "google"]} //this will provide the authentication providers
             supabaseClient={supabaseClient}
             appearance={{theme:ThemeSupa,

@@ -8,6 +8,8 @@ import {HiHome} from "react-icons/hi"
 import {BiSearch} from "react-icons/bi"
 import Button from "./Button";
 import UseAuthModal from "@/hooks/useAuthModal";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useUser } from "@/hooks/useUser";
 
 //defining the props that the header will accept
 interface HeaderProps{
@@ -23,11 +25,22 @@ const  Header: React.FC<HeaderProps> = ({
     children,
     className
 }) =>{
-    const AuthModal = UseAuthModal();
+    const authModal = UseAuthModal();
     const router = useRouter();
 
-    const handleLogout = () =>{
-        //handle logout in the future
+    const supabaseClient = useSupabaseClient();
+    const {user, subscription} = useUser();
+
+    const handleLogout = async() =>{
+        const {error} = await supabaseClient.auth.signOut();
+        //reset any playing songs in the future
+
+        router.refresh();
+        if(error){
+            console.log(error);
+
+        }
+       
 
     }
     return(
@@ -125,12 +138,14 @@ const  Header: React.FC<HeaderProps> = ({
                 items-center
                 gap-x-4
                 "
-                >
+                >{user?(
+                    <div>Logged in</div>
+                ):(
                     <>
                         <div>
                             {/* //custom button component that we have built */}
                             <Button
-                            onClick={AuthModal.onOpen}
+                            onClick={authModal.onOpen}
                             className="bg-transparent
                             text-Neutral-300
                             font-medium
@@ -145,7 +160,7 @@ const  Header: React.FC<HeaderProps> = ({
                             {/* //custom button component that we have built */}
                             {/* login button  */}
                             <Button
-                            onClick={AuthModal.onOpen}
+                            onClick={authModal.onOpen}
                             className="bg-white
                             px-6
                             py-2
@@ -156,6 +171,7 @@ const  Header: React.FC<HeaderProps> = ({
 
                         </div>
                     </>
+                )}
 
                 </div>
             </div>

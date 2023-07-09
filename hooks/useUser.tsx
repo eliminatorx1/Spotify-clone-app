@@ -1,6 +1,5 @@
 
 "use client"
-
 import { Subscription, UserDetails } from "@/types";
 
 import {useSessionContext, useUser as useSupaUser} from "@supabase/auth-helpers-react";
@@ -32,7 +31,7 @@ supabaseClient: supabase,
 
     const user = useSupaUser();
     const accessToken = session?.access_token?? null;
-    const [isLoadingData, setIsLoadingData] = useState(false);
+    const [isLoadingData, setIsloadingData] = useState(false);
     const[userDetails, setUserDetails] = useState<UserDetails|null>(null);
     const [subscription, setSubscription] =useState<Subscription|null>(null);
 
@@ -43,7 +42,7 @@ supabaseClient: supabase,
 
     useEffect(()=>{
         if(user && !isLoadingData && !userDetails && !subscription){
-            setIsLoadingData(true);
+            setIsloadingData(true);
 
             Promise.allSettled([getUserDetails(), getSubscription()]).then(
                 (results) =>{
@@ -56,7 +55,7 @@ supabaseClient: supabase,
                     if(subscriptionPromise.status === "fulfilled"){
                         setSubscription(subscriptionPromise.value.data as Subscription)
                     }
-                    setIsLoadingData(false);
+                    setIsloadingData(false);
                 }
 
             )
@@ -82,7 +81,7 @@ supabaseClient: supabase,
 export const useUser = () =>{
     const context = useContext(UserContext);
     if(context === undefined){
-        throw new Error("useUser must be used within a MyUserContextProvider");
+        throw new Error(`useUser must be used within a MyUserContextProvider`);
 
     }
     return context;
