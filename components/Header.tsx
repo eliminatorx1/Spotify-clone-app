@@ -10,6 +10,8 @@ import Button from "./Button";
 import UseAuthModal from "@/hooks/useAuthModal";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useUser } from "@/hooks/useUser";
+import { FaUserAlt } from "react-icons/fa";
+import {toast} from "react-hot-toast"
 
 //defining the props that the header will accept
 interface HeaderProps{
@@ -37,8 +39,10 @@ const  Header: React.FC<HeaderProps> = ({
 
         router.refresh();
         if(error){
-            console.log(error);
+            toast.error(error.message);
 
+        }else{
+            toast.success("Logged out!")
         }
        
 
@@ -139,7 +143,21 @@ const  Header: React.FC<HeaderProps> = ({
                 gap-x-4
                 "
                 >{user?(
-                    <div>Logged in</div>
+                    <div className="flex gap-x-4 items-center">
+                        <Button
+                         onClick={handleLogout}
+                         className="bg-white px-6 py-2"
+                        >
+                            Logout
+                        </Button>
+                        <Button 
+                        onClick={()=>router.push('/account')}
+                        className="bg-white"
+                        >
+                            <FaUserAlt/>
+
+                        </Button>
+                    </div>
                 ):(
                     <>
                         <div>
