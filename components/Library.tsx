@@ -5,9 +5,15 @@ import {AiOutlinePlus} from "react-icons/ai"
 import UseAuthModal from "@/hooks/useAuthModal";
 import { useUser } from "@/hooks/useUser";
 import UseUploadModal from "@/hooks/useUplaodModal";
+import { Song } from "@/types";
 
+interface LibraryProps{
+    songs: Song[];
+}
 
-const Library = () =>{
+const Library:React.FC<LibraryProps> = ({
+    songs
+}) =>{
     const authModal = UseAuthModal();
     const uploadModal = UseUploadModal();
     const {user} = useUser(); //user will only able to upload only if he is logged in else he will be prompted to login
@@ -61,7 +67,13 @@ const Library = () =>{
                 px-3
 
                 ">
-                    List of songs!
+                    {songs.map((item)=>(
+                        <div>
+                            {item.title}
+
+                        </div>
+
+                    ))}
 
                 </div>
 
