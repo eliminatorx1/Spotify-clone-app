@@ -33,7 +33,7 @@ const UploadModal = () => {
 
             }
 
-        })
+        });
 
 
 
@@ -53,7 +53,7 @@ const UploadModal = () => {
             const imageFile = values.image?.[0];
             const songFile = values.song?.[0];
 
-            if(!imageFile || songFile || !user){
+            if(!imageFile || !songFile || !user){
                 toast.error("missing fields");
                 return;
             }
@@ -63,7 +63,7 @@ const UploadModal = () => {
                 data:songData,
                 error:songError,
 
-            } = await supabaseClient.storage.from('songs').upload(`song-${values.title}-${uniqueID}}`, songFile, {
+            } = await supabaseClient.storage.from('songs').upload(`song-${values.title}-${uniqueID}`, songFile, {
                 cacheControl:'3600', //this will keep the file in the cache for the 3600 seconds
                 upsert:false //this will prevent the same already existing file form overwritten
             });
@@ -76,7 +76,7 @@ const UploadModal = () => {
                 data:imageData,
                 error:imageError,
 
-            } = await supabaseClient.storage.from('images').upload(`image-${values.title}-${uniqueID}}`, imageFile, {
+            } = await supabaseClient.storage.from('images').upload(`image-${values.title}-${uniqueID}`, imageFile, {
                 cacheControl:'3600', //this will keep the file in the cache for the 3600 seconds
                 upsert:false //this will prevent the same already existing file form overwritten
             });
@@ -85,7 +85,7 @@ const UploadModal = () => {
                 setIsLoading(false);
                 return toast.error("Failed image upload")
             }
-
+            //crate record
             const {
                 error: supabaseError
 
@@ -99,7 +99,7 @@ const UploadModal = () => {
 
             });
             if(supabaseError){
-                setIsLoading(false);
+                // setIsLoading(false);
                 return toast.error(supabaseError.message);
             }
             router.refresh();
