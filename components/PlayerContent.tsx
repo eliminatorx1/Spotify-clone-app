@@ -1,233 +1,206 @@
-"use client"
+"use client";
+
+import useSound from "use-sound";
+import { useEffect, useState } from "react";
+import { BsPauseFill, BsPlayFill } from "react-icons/bs";
+import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
+import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
 
 import { Song } from "@/types";
-import MediaItem from "./MediaItem";
-import LikeButton from "./LikeButton";
-import {BsPauseFill, BsPlayFill} from "react-icons/bs"
-import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
-import {HiSpeakerWave, HiSpeakerXMark} from "react-icons/hi2"
-import Slider from "./Slider";
 import usePlayer from "@/hooks/usePlayer";
-import { useEffect, useState } from "react";
-import useSound from "use-sound";
 
-interface PlayerContentProps{
-    song: Song;
-    songUrl: string;
+import LikeButton from "./LikeButton";
+import MediaItem from "./MediaItem";
+import Slider from "./Slider";
 
 
+interface PlayerContentProps {
+  song: Song;
+  songUrl: string;
 }
-const PlayerContent:React.FC<PlayerContentProps> = ({
-    song,
-    songUrl
-}) =>{
-    const player = usePlayer();
-    const[volume, setVolume]  = useState(1);
-    const[isPlaying, setIsPlaying] = useState(false);
 
+const PlayerContent: React.FC<PlayerContentProps> = ({ 
+  song, 
+  songUrl
+}) => {
+  const player = usePlayer();
+  const [volume, setVolume] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-    const Icon = isPlaying?BsPauseFill: BsPlayFill
-    const VolumeIcon = volume === 0? HiSpeakerXMark: HiSpeakerWave
+  const Icon = isPlaying ? BsPauseFill : BsPlayFill;
+  const VolumeIcon = volume === 0 ? HiSpeakerXMark : HiSpeakerWave;
 
-    //on play next
-
-    const onPlayNext = () =>{
-        if(player.ids.length === 0){
-            return;
-
-        }
-        const currentIndex = player.ids.findIndex((id)=> id === player.activeId);
-        const nextSong = player.ids[currentIndex+1]
-
-        if(!nextSong){
-            return player.setId(player.ids[0]); //reset the entire playlist if the song is our last song
-        }
-        player.setId(nextSong);
+  const onPlayNext = () => {
+    if (player.ids.length === 0) {
+      return;
     }
 
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    const nextSong = player.ids[currentIndex + 1];
 
-    //move to the previous song
-    const onPlayPrevious = () =>{
-        if(player.ids.length === 0){
-            return;
-
-        }
-        const currentIndex = player.ids.findIndex((id)=> id === player.activeId);
-        const previousSong = player.ids[currentIndex-1] //since we are looking for the previous song so we will do minus here
-
-        if(!previousSong){
-            return player.setId(player.ids[player.ids.length-1]); //play the last song if the previous song is the first song in the playlist
-        }
-        player.setId(previousSong);
+    if (!nextSong) {
+      return player.setId(player.ids[0]);
     }
 
-    const [play, {pause, sound}] = useSound(
-        songUrl,
-        {
-            volume:volume,
-            onPlay:()=>setIsPlaying(true),
-            onend:()=>{
-                setIsPlaying(false);
-                onPlayNext();
+    player.setId(nextSong);
+  }
 
-            },
-            onpause:()=>setIsPlaying(false),
-            format:['mp3'] //if this line is not written then songs will not be played
-        }
-    );
-    useEffect(()=>{
-        sound?.play();
-        return () =>{
-            sound?.unload();
+  const onPlayPrevious = () => {
+    if (player.ids.length === 0) {
+      return;
+    }
 
-        }
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    const previousSong = player.ids[currentIndex - 1];
 
-    },[sound])
+    if (!previousSong) {
+      return player.setId(player.ids[player.ids.length - 1]);
+    }
 
-    const handlePlay = () =>{
-        if(!isPlaying){
-            play();
+    player.setId(previousSong);
+  }
 
-        }else{
-            pause();
+  const [play, { pause, sound }] = useSound(
+    songUrl,
+    { 
+      volume: volume,
+      onplay: () => setIsPlaying(true),
+      onend: () => {
+        setIsPlaying(false);
+        onPlayNext();
+      },
+      onpause: () => setIsPlaying(false),
+      format: ['mp3']
+    }
+  );
 
-        };
-
-    };
+  useEffect(() => {
+    sound?.play();
     
-    const toggleMute = () =>{
-        if(volume === 0){
-            setVolume(1);
-        }else{
-            setVolume(0);
-
-        }
-
-
+    return () => {
+      sound?.unload();
     }
+  }, [sound]);
 
-    return(
-        <div className="grid grid-cols-2 md:grid-cols-3 h-full">
-            <div className="
-             flex
-             w-full
-             justify-start
+  const handlePlay = () => {
+    if (!isPlaying) {
+      play();
+    } else {
+      pause();
+    }
+  }
 
-            ">
-                <div className="flex items-center gap-x-4">
-                    <MediaItem data={song}/>
-                    <LikeButton songId ={song.id}/>
+  const toggleMute = () => {
+    if (volume === 0) {
+      setVolume(1);
+    } else {
+      setVolume(0);
+    }
+  }
 
-                </div>
-                
-            </div>
-            <div
-              className="
-               flex
-               md:hidden
-               col-auto
-               w-full
-               justify-end
-               items-center
+  return ( 
+    <div className="grid grid-cols-2 md:grid-cols-3 h-full">
+        <div className="flex w-full justify-start">
+          <div className="flex items-center gap-x-4">
+            <MediaItem data={song} />
+            <LikeButton songId={song.id} />
+          </div>
+        </div>
 
-              "
-            >
-                <div
-                  onClick={handlePlay}
-                  className="
-                   h-10
-                   w-10
-                   flex
-                   item-center
-                   justify-center
-                   rounded-full
-                   bg-white
-                   p-1
-                   cursor-pointer
-
-                  " 
-                >
-                    <Icon size={30} className="text-black"/>
-
-                </div>
-            </div>
         <div 
-         className="
-          hidden
-          h-full
-          md:flex
-          justify-center
-          items-center
-          w-full
-          max-w-[722px]
-          gap-x-6
-
-
-         "
+          className="
+            flex 
+            md:hidden 
+            col-auto 
+            w-full 
+            justify-end 
+            items-center
+          "
         >
-            <AiFillStepBackward
-             onClick={onPlayPrevious}
-             size={30}
-             className="
-               text-neutral-400
-               cursor-pointer
-               hover:text-white
-               transition
-             "
-            />
-            <div
-             onClick={handlePlay}
-             className="
-              flex
-              items-center
-              justify-center
+          <div 
+            onClick={handlePlay} 
+            className="
               h-10
               w-10
-              rounded-full
-              bg-white
-              p-1
+              flex 
+              items-center 
+              justify-center 
+              rounded-full 
+              bg-white 
+              p-1 
               cursor-pointer
-             "
-            >
-                <Icon size={30} className="text-black"/>
-
-            </div>
-            <AiFillStepForward
-                onClick={onPlayNext}
-                size = {30}
-                className="
-                text-neutral-400
-                cursor-pointer
-                hover:text-white
-                transition
-
-                  
-                "
-            
-            />
-
+            "
+          >
+            <Icon size={30} className="text-black" />
+          </div>
         </div>
+
+        <div 
+          className="
+            hidden
+            h-full
+            md:flex 
+            justify-center 
+            items-center 
+            w-full 
+            max-w-[722px] 
+            gap-x-6
+          "
+        >
+          <AiFillStepBackward
+            onClick={onPlayPrevious}
+            size={30} 
+            className="
+              text-neutral-400 
+              cursor-pointer 
+              hover:text-white 
+              transition
+            "
+          />
+          <div 
+            onClick={handlePlay} 
+            className="
+              flex 
+              items-center 
+              justify-center
+              h-10
+              w-10 
+              rounded-full 
+              bg-white 
+              p-1 
+              cursor-pointer
+            "
+          >
+            <Icon size={30} className="text-black" />
+          </div>
+          <AiFillStepForward
+            onClick={onPlayNext}
+            size={30} 
+            className="
+              text-neutral-400 
+              cursor-pointer 
+              hover:text-white 
+              transition
+            " 
+          />
+        </div>
+
         <div className="hidden md:flex w-full justify-end pr-2">
-            <div className="flex items-center gap-x-2 w-[120px]">
-                <VolumeIcon
-                 onClick={toggleMute}
-                 className="cursor-pointer"
-                 size={34}
-                />
-                <Slider
-                value={volume}
-                onChange={(value)=>setVolume(value)}
-                
-                />
-
-            </div>
-
+          <div className="flex items-center gap-x-2 w-[120px]">
+            <VolumeIcon 
+              onClick={toggleMute} 
+              className="cursor-pointer" 
+              size={34} 
+            />
+            <Slider 
+              value={volume} 
+              onChange={(value) => setVolume(value)}
+            />
+          </div>
         </div>
 
-
-           
-        </div>
-    )
+      </div>
+   );
 }
-
+ 
 export default PlayerContent;
